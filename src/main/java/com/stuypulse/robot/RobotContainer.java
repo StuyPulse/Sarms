@@ -5,11 +5,13 @@
 
 package com.stuypulse.robot;
 
+import com.stuypulse.robot.commands.Arm.armDrive;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
 import com.stuypulse.robot.constants.Ports;
 import com.stuypulse.robot.subsystems.armSim;
 import com.stuypulse.stuylib.input.Gamepad;
 import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
+import com.stuypulse.stuylib.input.gamepads.keyboard.SimKeyGamepad;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +21,7 @@ public class RobotContainer {
 
     // Gamepads
     public final Gamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
-    public final Gamepad operator = new AutoGamepad(Ports.Gamepad.OPERATOR);
+    // public final Gamepad operator = new AutoGamepad(Ports.Gamepad.OPERATOR);
     
     // Subsystem
     public final armSim arm = new armSim();
@@ -39,7 +41,9 @@ public class RobotContainer {
     /*** DEFAULTS ***/
     /****************/
 
-    private void configureDefaultCommands() {}
+    private void configureDefaultCommands() {
+        arm.setDefaultCommand(new armDrive(arm, driver));
+    }
 
     /***************/
     /*** BUTTONS ***/

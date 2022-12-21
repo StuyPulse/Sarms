@@ -6,13 +6,16 @@ import com.stuypulse.stuylib.network.SmartNumber;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class armSim extends SubsystemBase{
+public class armSim extends SubsystemBase {
 
   private final SingleJointedArmSim armSim;
   private final MechanismLigament2d armArm;
@@ -49,19 +52,26 @@ public class armSim extends SubsystemBase{
 
       driverState = new SmartNumber("Arm/Driver Simulation State", 0);
 
-      Mechanism2d arm = new Mechanism2d(m_armMass, m_armLength);
-      MechanismRoot2d armRoot = arm.getRoot("Intake Root", m_armMass, m_armLength);
+      Mechanism2d arm = new Mechanism2d(2, 2);
+      MechanismRoot2d armRoot = arm.getRoot("Intake Root", 1, m_armLength);
       armArm = new MechanismLigament2d("Arm Arm", 1, 45);
       armRoot.append(armArm);
       addChild("Arm Mechanism2d", arm);
 
       targetAngle = new SmartNumber("Arm/Target Angle", 0);
+
+      SmartDashboard.putData(arm);
     }
 
       @Override
       public void simulationPeriodic() {
         armSim.update(0.02);
         armSim.setInputVoltage(6);
+
+        armSim.setInput(6 * targetAngle.get());
+
+        RoboRioSim.setVInCurrent(BatterySim.calculateDefaultBatteryLoadedVoltage(
+                armSim.getCurrentDrawAmps()));
       }
 
       public void reset (double degrees){
@@ -75,6 +85,8 @@ public class armSim extends SubsystemBase{
       public void setAngle(double angle){
         targetAngle.set(angle);
       }
+
+      // public void add
 
       // public double getTargetAngle(){
       //   return targetAngle.get();
